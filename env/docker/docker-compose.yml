@@ -1,0 +1,48 @@
+version: '3.9'
+
+
+services:
+  pma:
+    depends_on: 
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD:
+        $MYSQL_ROOT_PASSWORD
+    image: phpmyadmin:latest
+    ports:
+      - target: 80
+        published: $PMA_PORT
+        protocol: tcp
+        mode: host
+    restart: always
+
+
+  db:
+    environment:
+      MYSQL_ROOT_PASSWORD:
+        $MYSQL_ROOT_PASSWORD
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_PASSWORD:
+        $MYSQL_PASSWORD
+    expose: 
+      - 3306
+    image: mysql:latest
+    ports:
+      - target: 3306
+        published: $MYSQL_PORT
+        protocol: tcp
+        mode: host
+    restart: always
+    volumes:
+      - type: bind
+        source: ../../data
+        target: /var/lib/mysql
+        read_only: false
+        volume:
+          nocopy: true
+    
+
+  
